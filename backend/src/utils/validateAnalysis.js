@@ -3,6 +3,10 @@ function validateAnalysis(data) {
   if (!data || typeof data !== "object" || Array.isArray(data)) {
     return { ok: false, errors: ["response must be an object"] };
   }
+  const analysisFields = ["summary", "dataCollected", "sharing", "retention", "concerns", "recommendations", "limitations"];
+  for (const field of Object.keys(data)) {
+    if (!analysisFields.includes(field)) errors.push(`${field} is not an allowed analysis field`);
+  }
   if (typeof data.summary !== "string") errors.push("summary must be a string");
 
   const arrayFields = ["dataCollected", "sharing", "retention", "concerns", "recommendations", "limitations"];
@@ -12,10 +16,14 @@ function validateAnalysis(data) {
 
   const checkFinding = (item, path, fields) => {
     if (!item || typeof item !== "object" || Array.isArray(item)) { errors.push(`${path} must be an object`); return; }
+    const allowedFields = [...fields, "evidence"];
+    for (const field of Object.keys(item)) {
+      if (!allowedFields.includes(field)) errors.push(`${path}.${field} is not an allowed finding field`);
+    }
     for (const f of fields) {
       if (typeof item[f] !== "string") errors.push(`${path}.${f} must be a string`);
     }
-    if (typeof item.evidence !== "string" || item.evidence === "") errors.push(`${path}.evidence must be a non-empty string`);
+    if (typeof item.evidence !== "string") errors.push(`${path}.evidence must be a string`);
   };
 
   if (Array.isArray(data.dataCollected)) data.dataCollected.forEach((x, i) => checkFinding(x, `dataCollected[${i}]`, ["category", "purpose"]));
@@ -25,10 +33,15 @@ function validateAnalysis(data) {
   if (Array.isArray(data.concerns)) {
     data.concerns.forEach((c, i) => {
       if (!c || typeof c !== "object" || Array.isArray(c)) { errors.push(`concerns[${i}] must be an object`); return; }
+      for (const field of Object.keys(c)) {
+        if (!["title", "severity", "explanation", "evidence"].includes(field)) {
+          errors.push(`concerns[${i}].${field} is not an allowed finding field`);
+        }
+      }
       if (typeof c.title !== "string") errors.push(`concerns[${i}].title must be a string`);
       if (!["low", "medium", "high"].includes(c.severity)) errors.push(`concerns[${i}].severity must be low|medium|high`);
       if (typeof c.explanation !== "string") errors.push(`concerns[${i}].explanation must be a string`);
-      if (typeof c.evidence !== "string" || c.evidence === "") errors.push(`concerns[${i}].evidence must be a non-empty string`);
+      if (typeof c.evidence !== "string") errors.push(`concerns[${i}].evidence must be a string`);
     });
   }
 
@@ -55,4 +68,16 @@ function validateEvidence(data, policyText) {
   return { ok: errors.length === 0, errors };
 }
 
-module.exports = { validateAnalysis, validateEvidence };
+function filterVerifiedFindings(data, policyText) {
+  const result = { ...data };
+  for (const field of ["dataCollected", "sharing", "retention", "concerns"]) {
+    result[field] = data[field].filter((item) =>
+      typeof item.evidence === "string" &&
+      item.evidence.trim().length > 0 &&
+      policyText.includes(item.evidence)
+    );
+  }
+  return result;
+}
+
+module.exports = { validateAnalysis, validateEvidence, filterVerifiedFindings };

@@ -33,7 +33,7 @@ async function analyze(req, res) {
   }
 
   try {
-    const result = await analyzePolicy(policyText, language);
+    const result = await analyzePolicy({ policyText, language });
     const schema = validateAnalysis(result);
     if (!schema.ok) {
       return res.status(502).json({ success: false, error: { code: "AI_INVALID_RESPONSE", message: "The model response could not be validated." } });
