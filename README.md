@@ -1,273 +1,240 @@
-# DataShadow AI
+# DataShadow — AI Privacy Policy Analyzer
 
-> **Understand Privacy Policies. Make Informed Decisions.**
+**Understand Privacy Policies. Identify Risks. Make Informed Decisions.**
 
-DataShadow AI is an informational tool that analyzes privacy-policy text and provides plain-language summaries and structured disclosures. Powered by a hosted Google Gemma model through the `@google/genai` SDK, it breaks down data collection, third-party sharing, data retention practices, potential user privacy concerns, practical recommendations, and relevant caveats.
+DataShadow is an AI-powered web application designed to help users understand complex privacy policies in a simpler and more accessible way. It analyzes privacy-policy content and helps users identify important data collection practices, potential privacy risks, and key information about how their personal data may be handled.
 
----
+The project aims to make privacy information easier to understand without requiring users to read lengthy and complicated legal documents manually.
 
-## 🎯 MVP Scope & Core Features
+## ✨ Features
 
-- **Single Application Server:** One unified Node.js and Express application serving both the accessible EJS frontend and the JSON REST API.
-- **Privacy Policy Analysis (`POST /api/analyze`):**
-  - **7 Canonical Analysis Fields:**
-    1. `summary`: Concise plain-language policy overview.
-    2. `dataCollected`: Categories, stated purposes, and supporting evidence quotes.
-    3. `sharing`: Third-party recipients, stated purposes, and evidence quotes.
-    4. `retention`: Disclosed retention periods, deletion rules, and evidence quotes.
-    5. `concerns`: Potential privacy concerns categorized by severity (`low`, `medium`, `high`) with explanations and evidence quotes.
-    6. `recommendations`: Actionable, practical steps for users to review or take.
-    7. `limitations`: Explicit caveats, notes on missing disclosures, and legal disclaimers.
-- **Sub-string Evidence Verification:** Every finding must cite verbatim, unnormalized excerpts from the user's submitted policy text. Findings with unverified or missing excerpts are filtered out.
-- **Bilingual Analysis Support:** Full analysis in English (`en`) and Hindi (`hi`), while preserving English JSON keys and machine enums.
-- **Resilient Security & Rate Limiting:**
-  - In-memory rate limiting: 10 requests per client IP per minute with `Retry-After` header.
-  - 400 KB JSON request body limit and 50,000 character policy length limit.
-  - Defense against prompt injection: user text is treated strictly as untrusted data.
-  - Zero credential leakage: API keys and submitted policy texts are never logged or exposed to the browser.
-- **Health Check (`GET /api/health`):** Instant verification that the backend server is running.
+- **AI-Powered Analysis:** Analyze privacy-policy content using an integrated AI service.
+- **Privacy Insights:** Highlight important information about data collection, usage, and sharing.
+- **Risk Awareness:** Help users recognize potentially concerning privacy practices.
+- **Readable Results:** Present analysis in a structured and understandable format.
+- **Web-Based Interface:** Access the application through a browser.
+- **Backend Processing:** Process requests through a Node.js and Express.js server.
+- **Responsive UI:** Build an accessible interface using modern frontend technologies.
+- **Health Check:** Provide a backend health-check endpoint if configured in the application.
 
----
+## 🛠️ Technology Stack
 
-## 📁 Repository Structure
+| Category | Technologies |
+|---|---|
+| Frontend | HTML5, JavaScript, Tailwind CSS |
+| Template Engine | EJS |
+| Backend | Node.js, Express.js |
+| AI Integration | Google Gemini API or the AI provider configured in the project |
+| Data Exchange | JSON, REST API |
+| Package Management | npm |
+| Version Control | Git, GitHub |
+| Deployment | Render (if deployed there) |
+
+## 🏗️ Project Architecture
+
+The application follows a client-server architecture.
 
 ```text
 DataShadow/
-├── backend/
-│   ├── app.js                   # Express application setup, view engine, routes & error middleware
-│   ├── server.js                # Server entry point (app.listen on process.env.PORT || 3000)
-│   ├── controllers/
-│   │   └── analyzeController.js # POST /api/analyze controller & error status mapping
-│   ├── middleware/
-│   │   ├── errorHandler.js      # Centralized error handler (INVALID_JSON, REQUEST_TOO_LARGE, etc.)
-│   │   ├── rateLimit.js         # IP-based rate limiter (10 req/min with Retry-After)
-│   │   └── validateAnalyzeRequest.js # Request payload validation (415, 400, 413, 422)
-│   ├── routes/
-│   │   ├── analyzeRoutes.js     # Router for POST /api/analyze
-│   │   └── healthRoutes.js      # Router for GET /api/health
-│   ├── services/
-│   │   └── aiAnalysisService.js # AI service wrapping @google/genai, prompts, timeout & parsing
-│   └── utils/
-│       └── validateAnalysis.js  # Schema validator, evidence substring checker & filter
-├── frontend/
-│   ├── public/
-│   │   ├── css/style.css        # Responsive, accessible stylesheet
-│   │   └── js/app.js            # Client-side script (DOM APIs, error handling, state management)
-│   └── views/
-│       └── index.ejs            # Main EJS template rendered at GET /
-├── tests/
-│   ├── aiAnalysisService.test.js    # Unit tests for AI service & error mappings
-│   ├── analyzeIntegration.test.js   # End-to-end API integration tests
-│   ├── analyzeValidation.test.js    # Input validation and error scenario tests
-│   ├── frontendIntegration.test.js # Template rendering & static asset tests
-│   ├── health.test.js               # Health check endpoint tests
-│   ├── rateLimit.test.js            # Rate limiter tests & Retry-After header
-│   └── validateAnalysis.test.js     # Schema and evidence substring validation tests
-├── docs/
-│   ├── DataShadow-API-Contract.md   # Authoritative team API contract v1
-│   └── ai-setup.md                  # AI service setup, configuration & troubleshooting guide
-├── package.json                 # Root project manifest, dependencies & scripts
-├── package-lock.json            # Deterministic dependency tree lockfile
-├── .env.example                 # Placeholder environment configuration template
-├── .gitignore                   # Ignore rules (excludes .env, node_modules, etc.)
-└── README.md                    # Project documentation
+│
+├── frontend/          # Frontend assets and interface
+├── views/             # EJS templates, if used
+├── routes/            # Express routes, if present
+├── services/          # AI integration and analysis logic
+├── public/            # Static assets, if configured
+├── app.js             # Application configuration, if present
+├── server.js          # Server entry point, if present
+├── package.json       # Dependencies and scripts
+├── .env.example       # Example environment configuration
+├── .gitignore
+└── README.md
 ```
 
----
+*Note: This is a representative structure. Adjust it to match the actual files and directories in your repository.*
 
-## 📋 Prerequisites
+## ⚙️ Getting Started
 
-- **Node.js:** v18.0.0 or later (v20+ or v24 recommended)
-- **npm:** v9.0.0 or later
-- **Google AI Studio API Key:** For accessing the hosted Gemma model (optional for running tests; tests run on mocked responses)
+### Prerequisites
 
----
+Make sure the following tools are installed:
 
-## 🚀 Getting Started
+- [Node.js](https://nodejs.org/)
+- npm (included with Node.js)
+- [Git](https://git-scm.com/)
+- An API key for the AI provider configured in the project, if required
 
-### 1. Clone the repository
+### 1. Clone the Repository
+
 ```bash
 git clone https://github.com/VipinKumar04/DataShadow.git
 cd DataShadow
 ```
 
-### 2. Install dependencies
+Replace `YOUR_GITHUB_REPOSITORY_URL` with your repository's actual URL.
+
+### 2. Install Dependencies
+
 ```bash
 npm install
 ```
 
-### 3. Configure environment variables
-Create a local `.env` file in the repository root by copying `.env.example`:
-```bash
-cp .env.example .env
-```
-Edit `.env` with your real credentials:
-```dotenv
-NODE_ENV=development
+### 3. Configure Environment Variables
+
+Create a `.env` file in the project root, following the variable names expected by your application.
+
+For example, if your implementation uses the Gemini API:
+
+```env
 PORT=3000
-GEMINI_API_KEY=your_actual_gemini_api_key_here
-GEMINI_MODEL=gemma-4-26b-a4b-it
-AI_REQUEST_TIMEOUT_MS=60000
-AI_MAX_OUTPUT_TOKENS=4096
-MAX_POLICY_TEXT_LENGTH=50000
+GEMINI_API_KEY=your_api_key_here
 ```
-> [!IMPORTANT]
-> The `.env` file is for your local environment only and is ignored by Git. **Never commit `.env` or share your API key.**
 
-### 4. Run the server
-- **Production / Standard mode:**
-  ```bash
-  npm start
-  ```
-- **Development mode (with Node `--watch` reload):**
-  ```bash
-  npm run dev
-  ```
-Once started, visit **http://localhost:3000** in your web browser.
+Use the actual variable names from your source code. Never commit your real API key or other secrets to GitHub.
 
----
+### 4. Start the Application
 
-## 🧪 Running Automated Tests
+Check the scripts available in `package.json`.
 
-All tests execute using Node.js's native test runner (`node:test` and `node:assert`). No external test frameworks or live API keys are required:
+For example, if the project defines a `start` script:
+
+```bash
+npm start
+```
+
+For development, if a `dev` script is configured:
+
+```bash
+npm run dev
+```
+
+Otherwise, start the application using the entry-point file specified in your project.
+
+### 5. Open the Application
+
+Visit the local URL printed in your terminal, for example:
+
+```text
+http://localhost:3000
+```
+
+The port may differ depending on your configuration.
+
+## 🔄 How It Works
+
+1. The user opens DataShadow in a web browser.
+2. The user supplies privacy-policy text or uses an input method supported by the application.
+3. The frontend sends the content to the backend.
+4. The backend validates the request and passes the relevant content to the configured AI service.
+5. The AI service generates an analysis.
+6. The backend returns the result to the frontend.
+7. The user reviews the resulting privacy insights.
+
+The exact workflow depends on the features implemented in the current version.
+
+## 🔌 API Documentation
+
+If the following endpoints exist in your implementation, document them here.
+
+| Method | Endpoint | Purpose |
+|---|---|---|
+| GET | `/` | Load the main application page |
+| GET | `/api/health` | Check backend availability |
+| POST | `/api/analyze` | Submit privacy-policy content for analysis |
+
+**Example request** for an analysis endpoint that accepts a `text` field:
+
+```json
+{
+  "text": "Paste privacy policy content here"
+}
+```
+
+The request body and endpoint names must match your actual backend implementation.
+
+## 🔐 Security and Privacy
+
+DataShadow is designed to help users understand privacy policies. Security and responsible data handling are important considerations.
+
+- Keep API keys and secrets in environment variables.
+- Never expose private API credentials in frontend JavaScript.
+- Validate and limit user input before processing.
+- Avoid logging sensitive user-provided content unnecessarily.
+- Review the AI provider's data-handling terms before sending content to its API.
+- Explain clearly how submitted content is processed, stored, or retained.
+- Do not treat AI-generated analysis as definitive legal advice.
+
+## 🚀 Deployment
+
+DataShadow can be deployed to a Node.js-compatible hosting platform, such as Render, if the application is configured for that environment.
+
+General deployment steps:
+
+1. Push the project to GitHub.
+2. Create a web service on the chosen hosting platform.
+3. Connect the repository.
+4. Configure the build and start commands from `package.json`.
+5. Add the required environment variables through the hosting dashboard.
+6. Deploy the application and test the live URL.
+7. Verify the frontend, AI integration, and health-check endpoint if available.
+
+Never upload your `.env` file or API keys to a public repository.
+
+## 🧪 Testing
+
+Run the tests defined in your project:
 
 ```bash
 npm test
 ```
 
-The automated test suite runs 53 tests across 8 suites covering:
-- EJS template rendering and static asset serving
-- GET `/api/health` response validation
-- Input validation (missing fields, wrong types, empty text, invalid JSON, unsupported media type)
-- Boundary limits (50,000 char threshold, 400 KB payload limit)
-- Rate limiting and `Retry-After` header verification
-- AI service prompts, error mapping, timeout simulation, and evidence substring verification
+This command works only if a test script is configured in `package.json`.
 
----
+Test the application for valid input, empty input, API failures, unexpected AI responses, and invalid requests before deployment.
 
-## 🌐 API Reference
+## 🔮 Future Improvements
 
-### Health Check
-```http
-GET /api/health
-```
-**Response (`200 OK`):**
-```json
-{
-  "success": true,
-  "status": "ok"
-}
-```
+Potential improvements include:
 
-### Analyze Privacy Policy
-```http
-POST /api/analyze
-Content-Type: application/json
-```
-**Request Body:**
-```json
-{
-  "policyText": "We collect your email address to provide customer support. We retain support logs for 30 days.",
-  "language": "en"
-}
-```
+- Support for privacy policies from URLs.
+- PDF and document uploads.
+- Side-by-side policy comparisons.
+- More detailed risk categorization.
+- Downloadable analysis reports.
+- Policy summaries with references to the original text.
+- Improved accessibility and multilingual support.
 
-**Success Response (`200 OK`):**
-```json
-{
-  "success": true,
-  "analysis": {
-    "summary": "The policy explains that email addresses are collected for support and retained for 30 days.",
-    "dataCollected": [
-      {
-        "category": "Contact Information",
-        "purpose": "Provide customer support",
-        "evidence": "We collect your email address to provide customer support."
-      }
-    ],
-    "sharing": [],
-    "retention": [
-      {
-        "topic": "Support logs",
-        "details": "Retained for 30 days",
-        "evidence": "We retain support messages for 30 days."
-      }
-    ],
-    "concerns": [],
-    "recommendations": [
-      "Verify retention policies if you request account deletion."
-    ],
-    "limitations": [
-      "Analysis is informational and limited to the supplied excerpt."
-    ]
-  }
-}
-```
+These are proposed improvements and may not be available in the current version.
 
-**Standard Error Response Schema:**
-```json
-{
-  "success": false,
-  "error": {
-    "code": "INVALID_INPUT",
-    "message": "Please provide valid privacy-policy text and a supported language."
-  }
-}
-```
+## 🤝 Contributing
 
-| HTTP Status | Error Code | Description |
-|---|---|---|
-| `400` | `INVALID_JSON` | Malformed JSON request body |
-| `400` | `INVALID_INPUT` | Missing or invalid fields, non-string, or unknown keys |
-| `413` | `POLICY_TOO_LONG` | `policyText` exceeds 50,000 code units |
-| `413` | `REQUEST_TOO_LARGE` | JSON body exceeds 400 KB |
-| `415` | `UNSUPPORTED_MEDIA_TYPE` | Content-Type is not `application/json` |
-| `422` | `UNSUPPORTED_LANGUAGE` | `language` is not `en` or `hi` |
-| `429` | `RATE_LIMITED` | Exceeded 10 requests per minute per IP |
-| `502` | `AI_INVALID_RESPONSE` | Model output could not be validated |
-| `503` | `AI_PROVIDER_UNAVAILABLE` | AI provider unavailable or missing configuration |
-| `504` | `AI_TIMEOUT` | AI request exceeded timeout (default 60s) |
-| `500` | `INTERNAL_SERVER_ERROR` | Unexpected server error |
+Contributions are welcome.
 
----
+1. Fork the repository.
+2. Create a feature branch.
+3. Make your changes and add relevant tests.
+4. Commit your changes with a clear message.
+5. Open a pull request describing the changes.
 
-## 👥 Team Collaboration & Workflow
-
-DataShadow AI is built collaboratively across three roles coordinated through Git feature branches:
-
-- **Person 1 (Frontend & UI):** Designed accessible EJS view templates, modern CSS tokens, client-side validation, and safe DOM rendering.
-- **Person 2 (Backend & API Integration):** Architected Express application, routes, controllers, validation middleware, rate limiting, and unified server integration.
-- **Person 3 (AI Integration, QA & Contract Compliance):** Authored Google Gen AI service layer, model prompts, schema validation, and test suites.
-
-**Branch Workflow:**
-- `feature/person-1-frontend`: Person 1 frontend development branch
-- `feature/person-2-backend-api`: Person 2 backend & integration branch
-- `feature/person-3-ai-qa-docs`: Person 3 AI service & QA branch
-- `main`: Production-ready release branch
-
----
-
-## 🔒 Privacy, Security & Limitations
-
-- **Informational Tool:** DataShadow AI provides informational summaries and is **not** a substitute for legal advice.
-- **Grounded Evidence:** All findings must cite exact, verbatim excerpts from the provided text.
-- **Missing Disclosures:** Absence of a disclosure in submitted text does not prove an organization never performs that practice.
-- **Untrusted Input Handling:** User-provided policy text is treated as untrusted data in model prompts to prevent prompt injection.
-- **No Data Persistence:** Policy texts and analysis results are never stored in a database or logged on the server.
-
----
-
-## 🔧 Troubleshooting
-
-| Issue | Likely Cause | Solution |
-|---|---|---|
-| `AI_PROVIDER_UNAVAILABLE` / `MISSING_CONFIG` | `GEMINI_API_KEY` or `GEMINI_MODEL` is missing in `.env` | Ensure `.env` exists in the project root and has a valid API key and model name. |
-| `AI_TIMEOUT` (`504`) | AI provider took longer than timeout | Check internet connection or increase `AI_REQUEST_TIMEOUT_MS` in `.env`. |
-| `AI_INVALID_RESPONSE` (`502`) | Model output failed JSON parsing or schema checks | Retry request; prompt instructions and code fence strippers handle standard markdown output automatically. |
-| `RATE_LIMITED` (`429`) | More than 10 requests submitted within 60 seconds | Check the `Retry-After` header value and wait the specified seconds before retrying. |
-
----
+Please avoid committing credentials, personal data, or generated files that do not belong in the repository.
 
 ## 📄 License
 
-ISC License. See package configuration for details.
+This project is distributed under the license specified in the repository. If no license has been selected, choose and add an appropriate license before describing the project as open source.
+
+## ⚠️ Disclaimer
+
+DataShadow provides AI-generated informational insights about privacy policies. It does not replace professional legal advice, and its results may be incomplete or inaccurate. Users should consult the original privacy policy and seek qualified advice when necessary.
+
+## 👨‍💻 Project Information
+
+**Project Name:** DataShadow
+
+**Project Type:** AI-Powered Web Application
+
+**Primary Purpose:** Privacy Policy Analysis and Awareness
+
+**Repository:**[ (https://github.com/VipinKumar04/DataShadow.git)](https://github.com/VipinKumar04/DataShadow.git)
+
+---
+
+*Built to make privacy policies easier to understand.*
