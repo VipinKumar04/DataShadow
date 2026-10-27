@@ -105,7 +105,8 @@ async function analyzePolicy({ policyText, language, client } = {}) {
       .replace(/^```(?:json)?\s*/i, "")
       .replace(/\s*```$/i, "")
       .trim();
-    analysis = JSON.parse(cleanedText);
+    const match = cleanedText.match(/\{[\s\S]*\}/);
+    analysis = JSON.parse(match ? match[0] : cleanedText);
   } catch {
     throw serviceError("AI_INVALID_RESPONSE", "INVALID_MODEL_OUTPUT");
   }
