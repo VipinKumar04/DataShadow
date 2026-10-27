@@ -3,16 +3,14 @@ const { validateAnalysis, validateEvidence } = require("../src/utils/validateAna
 describe("validateAnalysis", () => {
   const valid = {
     summary: "s",
-    dataCollected: [{ finding: "f", evidence: "e" }],
-    sharing: [{ finding: "f", evidence: "" }],
-    retention: [{ finding: "f", evidence: "e" }],
-    concerns: [{ title: "t", description: "d", severity: "low", evidence: "" }],
+    dataCollected: [{ category: "c", purpose: "p", evidence: "e" }],
+    sharing: [{ recipient: "r", purpose: "p", evidence: "e" }],
+    retention: [{ topic: "t", details: "d", evidence: "e" }],
+    concerns: [{ title: "t", severity: "low", explanation: "x", evidence: "e" }],
     recommendations: ["r"],
     limitations: ["l"],
   };
-  test("valid response", () => {
-    expect(validateAnalysis(valid).ok).toBe(true);
-  });
+  test("valid response", () => expect(validateAnalysis(valid).ok).toBe(true));
   test("missing required field", () => {
     const { summary, ...rest } = valid;
     expect(validateAnalysis(rest).ok).toBe(false);
@@ -20,6 +18,11 @@ describe("validateAnalysis", () => {
   test("invalid severity", () => {
     const bad = JSON.parse(JSON.stringify(valid));
     bad.concerns[0].severity = "critical";
+    expect(validateAnalysis(bad).ok).toBe(false);
+  });
+  test("empty evidence rejected", () => {
+    const bad = JSON.parse(JSON.stringify(valid));
+    bad.dataCollected[0].evidence = "";
     expect(validateAnalysis(bad).ok).toBe(false);
   });
   test("wrong types", () => {
@@ -31,15 +34,11 @@ describe("validateAnalysis", () => {
 
 describe("validateEvidence", () => {
   test("exact substring passes", () => {
-    const data = { dataCollected: [{ finding: "f", evidence: "hello" }] };
+    const data = { dataCollected: [{ category: "c", purpose: "p", evidence: "hello" }] };
     expect(validateEvidence(data, "say hello world").ok).toBe(true);
   });
   test("fabricated evidence fails", () => {
-    const data = { dataCollected: [{ finding: "f", evidence: "nope" }] };
+    const data = { dataCollected: [{ category: "c", purpose: "p", evidence: "nope" }] };
     expect(validateEvidence(data, "hello world").ok).toBe(false);
-  });
-  test("empty evidence passes", () => {
-    const data = { dataCollected: [{ finding: "f", evidence: "" }] };
-    expect(validateEvidence(data, "hello").ok).toBe(true);
   });
 });
