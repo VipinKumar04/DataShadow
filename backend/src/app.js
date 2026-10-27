@@ -11,6 +11,8 @@ app.get("/api/health", (req, res) => {
   res.json({ status: "ok" });
 });
 
+app.use("/api", require("./routes/analyzeRoutes"));
+
 if (require.main === module) {
   app.listen(port, () => {
     console.log(`DataShadow backend listening on port ${port}`);
