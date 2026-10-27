@@ -99,9 +99,13 @@ async function analyzePolicy({ policyText, language, client } = {}) {
 
   let analysis;
   try {
-    const text = responseText(response).trim();
-    if (!text) throw new Error("empty model output");
-    analysis = JSON.parse(text);
+    const rawText = responseText(response).trim();
+    if (!rawText) throw new Error("empty model output");
+    const cleanedText = rawText
+      .replace(/^```(?:json)?\s*/i, "")
+      .replace(/\s*```$/i, "")
+      .trim();
+    analysis = JSON.parse(cleanedText);
   } catch {
     throw serviceError("AI_INVALID_RESPONSE", "INVALID_MODEL_OUTPUT");
   }

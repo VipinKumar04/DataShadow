@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= typeof pageTitle !== 'undefined' ? pageTitle : 'DataShadow AI' %></title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <a href="#mainContent" class="skip-link">Skip to main content</a>
+
+  <header class="app-header">
+    <div class="container header-container">
+      <div class="brand">
+        <h1 class="brand-title">DataShadow AI</h1>
+        <p class="brand-tagline">Understand Privacy Policies. Make Informed Decisions.</p>
+      </div>
+      <div class="badge-prototype" role="note" aria-label="Status notice">
+        <span class="badge-dot" aria-hidden="true"></span>
+        <span>POST /api/analyze Ready</span>
+      </div>
+    </div>
+  </header>
+
+  <main id="mainContent" class="container app-main">
+    <!-- Informational Banner -->
+    <section class="banner" aria-label="API Integration Information">
+      <p class="banner-text">
+        <strong>Notice:</strong> This interface communicates directly with the DataShadow AI backend via 
+        <strong>POST /api/analyze</strong> adhering to the team's authoritative <strong>Final API Contract v1</strong>.
+      </p>
+    </section>
+
+    <!-- Analysis Form -->
+    <section class="card input-section" aria-labelledby="inputSectionHeading">
+      <h2 id="inputSectionHeading" class="section-title">Input Privacy Policy</h2>
+      <p id="policyHint" class="section-description">
+        Paste a company's privacy policy text below (up to 50,000 characters) and select your preferred language.
+      </p>
+
+      <form id="policyForm" novalidate onsubmit="return false;">
+        <div class="form-group">
+          <div class="form-label-row">
+            <label for="policyText" class="form-label">
+              Privacy Policy Text <span class="required" aria-hidden="true">*</span>
+            </label>
+            <span id="charCounter" class="char-counter" aria-live="polite">0 / 50,000 characters</span>
+          </div>
+          <textarea 
+            id="policyText" 
+            name="policyText" 
+            class="form-textarea" 
+            rows="11" 
+            maxlength="50000"
+            placeholder="Paste privacy policy text here to analyze..." 
+            aria-describedby="charCounter policyHint"
+            spellcheck="false"
+          ></textarea>
+        </div>
+
+        <div class="controls-row">
+          <div class="form-group language-group">
+            <label for="languageSelect" class="form-label">Analysis Language</label>
+            <select id="languageSelect" name="language" class="form-select">
+              <option value="en" selected>English (en)</option>
+              <option value="hi">हिन्दी (hi)</option>
+            </select>
+          </div>
+
+          <div class="form-actions">
+            <button type="button" id="analyzeBtn" class="btn btn-primary">
+              <span class="btn-text">Analyze Policy</span>
+            </button>
+            <button type="button" id="clearBtn" class="btn btn-secondary">
+              <span class="btn-text">Clear Text</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Accessible Validation Alert -->
+        <div id="validationAlert" class="alert alert-error hidden" role="alert" aria-live="assertive"></div>
+      </form>
+    </section>
+
+    <!-- Accessible Loading State -->
+    <section id="loadingState" class="card loading-card hidden" role="status" aria-live="polite" aria-label="Analysis in progress">
+      <div class="spinner" aria-hidden="true"></div>
+      <p id="loadingMessage" class="loading-text">Analyzing privacy policy...</p>
+      <p class="loading-subtext">Evaluating data collection, sharing, retention, concerns, recommendations, and limitations.</p>
+    </section>
+
+    <!-- Results Section (Populated safely via DOM APIs) -->
+    <section id="resultsSection" class="results-section hidden" aria-labelledby="resultsHeading" aria-live="polite" tabindex="-1">
+      <div class="results-header">
+        <div class="results-header-left">
+          <h2 id="resultsHeading" class="results-title">Analysis Results</h2>
+          <span id="resultLanguageBadge" class="badge badge-neutral"></span>
+        </div>
+        <div class="mock-tag" aria-label="Contract indicator">
+          <span>Final API Contract v1</span>
+        </div>
+      </div>
+
+      <!-- Seven API Contract Field Cards -->
+      <div class="results-grid">
+        <!-- 1. Summary Card -->
+        <article class="card result-card" id="cardSummary" aria-labelledby="headingSummary">
+          <div class="card-header">
+            <h3 id="headingSummary" class="card-title">1. Summary</h3>
+          </div>
+          <div class="card-body" id="bodySummary"></div>
+        </article>
+
+        <!-- 2. Data Collected Card -->
+        <article class="card result-card" id="cardDataCollected" aria-labelledby="headingDataCollected">
+          <div class="card-header">
+            <h3 id="headingDataCollected" class="card-title">2. Data Collected</h3>
+          </div>
+          <div class="card-body" id="bodyDataCollected"></div>
+        </article>
+
+        <!-- 3. Sharing Card -->
+        <article class="card result-card" id="cardSharing" aria-labelledby="headingSharing">
+          <div class="card-header">
+            <h3 id="headingSharing" class="card-title">3. Third-Party Sharing</h3>
+          </div>
+          <div class="card-body" id="bodySharing"></div>
+        </article>
+
+        <!-- 4. Retention Card -->
+        <article class="card result-card" id="cardRetention" aria-labelledby="headingRetention">
+          <div class="card-header">
+            <h3 id="headingRetention" class="card-title">4. Data Retention</h3>
+          </div>
+          <div class="card-body" id="bodyRetention"></div>
+        </article>
+
+        <!-- 5. Concerns Card -->
+        <article class="card result-card" id="cardConcerns" aria-labelledby="headingConcerns">
+          <div class="card-header">
+            <h3 id="headingConcerns" class="card-title">5. Privacy Concerns</h3>
+          </div>
+          <div class="card-body" id="bodyConcerns"></div>
+        </article>
+
+        <!-- 6. Recommendations Card -->
+        <article class="card result-card" id="cardRecommendations" aria-labelledby="headingRecommendations">
+          <div class="card-header">
+            <h3 id="headingRecommendations" class="card-title">6. Recommendations</h3>
+          </div>
+          <div class="card-body" id="bodyRecommendations"></div>
+        </article>
+
+        <!-- 7. Limitations Card -->
+        <article class="card result-card" id="cardLimitations" aria-labelledby="headingLimitations">
+          <div class="card-header">
+            <h3 id="headingLimitations" class="card-title">7. Limitations</h3>
+          </div>
+          <div class="card-body" id="bodyLimitations"></div>
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <footer class="app-footer">
+    <div class="container footer-container">
+      <p class="disclaimer-text">
+        <strong>Disclaimer:</strong> DataShadow AI is an informational tool, not a substitute for professional legal advice.
+        Analysis is strictly based on the text provided. Absence of explicit disclosures does not prove a practice does not occur.
+      </p>
+      <p class="copyright-text">&copy; DataShadow AI Team. Built with Node.js, Express, EJS, and Vanilla JS.</p>
+    </div>
+  </footer>
+
+  <script src="/js/app.js" defer></script>
+</body>
+</html>
