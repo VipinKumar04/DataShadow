@@ -15,19 +15,19 @@
         <h1 class="brand-title">DataShadow AI</h1>
         <p class="brand-tagline">Understand Privacy Policies. Make Informed Decisions.</p>
       </div>
-      <div class="badge-prototype" role="note" aria-label="Prototype notice">
+      <div class="badge-prototype" role="note" aria-label="Status notice">
         <span class="badge-dot" aria-hidden="true"></span>
-        <span>Frontend Prototype &bull; Mock Analysis Mode</span>
+        <span>POST /api/analyze Ready</span>
       </div>
     </div>
   </header>
 
   <main id="mainContent" class="container app-main">
     <!-- Informational Banner -->
-    <section class="banner" aria-label="Prototype Information">
+    <section class="banner" aria-label="API Integration Information">
       <p class="banner-text">
-        <strong>Notice:</strong> This interface displays simulated mock findings according to the team's 
-        <strong>Final API Contract v1</strong>. Real AI analysis will be connected during backend integration.
+        <strong>Notice:</strong> This interface communicates directly with the DataShadow AI backend via 
+        <strong>POST /api/analyze</strong> adhering to the team's authoritative <strong>Final API Contract v1</strong>.
       </p>
     </section>
 
@@ -85,7 +85,7 @@
     <!-- Accessible Loading State -->
     <section id="loadingState" class="card loading-card hidden" role="status" aria-live="polite" aria-label="Analysis in progress">
       <div class="spinner" aria-hidden="true"></div>
-      <p id="loadingMessage" class="loading-text">Simulating privacy policy analysis with mock data...</p>
+      <p id="loadingMessage" class="loading-text">Analyzing privacy policy...</p>
       <p class="loading-subtext">Evaluating data collection, sharing, retention, concerns, recommendations, and limitations.</p>
     </section>
 
@@ -96,8 +96,8 @@
           <h2 id="resultsHeading" class="results-title">Analysis Results</h2>
           <span id="resultLanguageBadge" class="badge badge-neutral"></span>
         </div>
-        <div class="mock-tag" aria-label="Mock indicator">
-          <span>Simulated Mock Data (Final API Contract v1)</span>
+        <div class="mock-tag" aria-label="Contract indicator">
+          <span>Final API Contract v1</span>
         </div>
       </div>
 
